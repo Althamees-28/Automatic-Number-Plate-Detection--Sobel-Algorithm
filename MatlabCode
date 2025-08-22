@@ -1,0 +1,209 @@
+%CREATE TEMPLATES 
+%Alphabets
+A=imread('alpha/A.bmp');
+B=imread('alpha/B.bmp');
+C=imread('alpha/C.bmp');
+D=imread('alpha/D.bmp');
+E=imread('alpha/E.bmp');
+F=imread('alpha/F.bmp');
+G=imread('alpha/G.bmp');
+H=imread('alpha/H.bmp');
+I=imread('alpha/I.bmp');
+J=imread('alpha/J.bmp');
+K=imread('alpha/K.bmp');
+L=imread('alpha/L.bmp');
+M=imread('alpha/M.bmp');                    
+N=imread('alpha/N.bmp');
+O=imread('alpha/O.bmp');
+P=imread('alpha/P.bmp');
+Q=imread('alpha/Q.bmp'); 			1.This section reads images of individual alphabet
+                    			 characters (A-Z) from bitmap files located in the
+                                               	                         'alpha' directory and assigns them to variables A-Z
+R=imread('alpha/R.bmp');
+S=imread('alpha/S.bmp');
+T=imread('alpha/T.bmp');
+U=imread('alpha/U.bmp');
+V=imread('alpha/V.bmp');
+W=imread('alpha/W.bmp');
+X=imread('alpha/X.bmp');
+Y=imread('alpha/Y.bmp');
+Z=imread('alpha/Z.bmp');
+
+%Natural Numbers
+one=imread('alpha/1.bmp');              2. Similar to the previous section, this part reads images
+                                                                               of numeric digits (0-9) from bitmap files in the 'alpha'
+                                                        		        directory and assigns them to variables one through
+                                                                                zero
+two=imread('alpha/2.bmp');
+three=imread('alpha/3.bmp');
+four=imread('alpha/4.bmp');
+five=imread('alpha/5.bmp'); 
+six=imread('alpha/6.bmp');
+seven=imread('alpha/7.bmp');
+eight=imread('alpha/8.bmp');
+nine=imread('alpha/9.bmp'); 
+zero=imread('alpha/0.bmp');
+
+                 				  3.  Here, two arrays 'letter' and 'number' are created by
+         					                         concatenating the variables holding the alphabet and
+                         numeric images, respectively.
+letter=[A B C D E F G H I J K L M N O P Q R S T U V W X Y Z];
+%Creating Array for Numbers
+number=[one two three four five six seven eight nine zero];
+
+NewTemplates=[letter number];             4. Combines the 'letter' and 'number' arrays into a single
+                                                                                      array called 'NewTemplates
+save ('NewTemplates','NewTemplates')        5.  Saves the 'NewTemplates' array into a file named
+                                                                                        'NewTemplates.mat’.
+clear all
+
+
+
+
+
+
+
+
+%Letter Detection
+
+function letter=readLetter(snap)
+
+load NewTemplates 
+snap=imresize(snap,[42 24]); 
+rec=[ ];
+
+for n=1:length(NewTemplates)
+    cor=corr2(NewTemplates{1,n},snap); 
+    rec=[rec cor]; 
+end
+
+ind=find(rec==max(rec));
+display(ind);
+
+% Alphabets listings.
+if ind==1 || ind==2
+    letter='A';
+elseif ind==3 || ind==4
+    letter='B';
+elseif ind==5
+    letter='C';
+elseif ind==6 || ind==7
+    letter='D';
+elseif ind==8
+    letter='E';
+elseif ind==9
+    letter='F';
+
+elseif ind==10
+    letter='G';
+&%iuyui
+elseif ind==11
+    letter='H';
+elseif ind==12
+    letter='I';
+elseif ind==13
+    letter='J';
+elseif ind==14
+    letter='K';
+elseif ind==15
+    letter='L';
+elseif ind==16
+    letter='M';
+elseif ind==17
+    letter='N';
+elseif ind==18 || ind==19
+    letter='O';
+elseif ind==20 || ind==21
+    letter='P';
+elseif ind==22 || ind==23
+    letter='Q';
+elseif ind==24 || ind==25
+    letter='R';
+elseif ind==26
+    letter='S';
+elseif ind==27
+    letter='T';
+elseif ind==28
+    letter='U';
+elseif ind==29
+    letter='V';
+elseif ind==30
+    letter='W';
+elseif ind==31
+    letter='X';
+elseif ind==32
+    letter='Y';
+elseif ind==33
+    letter='Z';
+    %*-*-*-*-*
+% Numerals listings.
+elseif ind==34
+    letter='1';
+elseif ind==35
+    letter='2';
+elseif ind==36
+    letter='3';
+elseif ind==37 || ind==38
+    letter='4';
+elseif ind==39
+    letter='5';
+elseif ind==40 || ind==41 || ind==42
+    letter='6';
+elseif ind==43
+    letter='7';
+elseif ind==44 || ind==45
+    letter='8';
+elseif ind==46 || ind==47 || ind==48
+    letter='9';
+else
+    letter='0';
+end
+end
+
+%Plate Detection
+
+close all;
+clear all;
+
+im = imread('Number Plate Images/image1.png');     1. % Reading the Input Image
+imgray = rgb2gray(im);                             2. % Converting to Binary Grey Image for OSR
+imbin = imbinarize(imgray);
+im = edge(imgray, 'prewitt');                      3. %Prewitt- Pixel Density
+
+%Below steps are to find location of number plate
+Iprops=regionprops(im,'BoundingBox','Area', 'Image');  4. % Applying Sobel’s Algorithm
+                                                                                                     {Bounding Box Method} for Edge Calculation
+area = Iprops.Area;
+count = numel(Iprops);
+maxa= area;
+boundingBox = Iprops.BoundingBox;                      5. %Measures The Area for both Contiguous   
+                                                                                                           and Non-Contiguous Regions
+for i=1:count
+   if maxa<Iprops(i).Area
+       maxa=Iprops(i).Area;
+       boundingBox=Iprops(i).BoundingBox;               6. %Returns the Number of Elements in
+                        							Array
+   end
+end    
+
+im = imcrop(imbin, boundingBox);%crop the number plate area
+im = bwareaopen(~im, 500); %remove some object if it width is too long or too small than 500
+
+ [h, w] = size(im);%get width
+
+imshow(im);
+
+Iprops=regionprops(im,'BoundingBox','Area', 'Image'); %read letter
+count = numel(Iprops);
+noPlate=[]; % Initializing the variable of number plate string.
+
+for i=1:count
+   ow = length(Iprops(i).Image(1,:));
+   oh = length(Iprops(i).Image(:,1));
+   if ow<(h/2) & oh>(h/3)
+       letter=Letter_detection(Iprops(i).Image); % Reading the letter corresponding the binary image 'N'.
+       noPlate=[noPlate letter] % Appending every subsequent character in noPlate variable.
+   end
+end
+
+
